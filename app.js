@@ -11,14 +11,22 @@ const User = require('./models/user');
 const data = require("../frontend/public/data/data.json");
 
 
+const bookRoutes = require('./routes/book');
+
+const userRoutes = require('./routes/user');
+
+const passwordDb = require('./logs/logsDb');
+
+
+
 /*
 const user = new User({
-  id : 8,
-  emailAdress : "vincent.quildfes@hotmail.fr",
+  email : "vincent.quildfes@hotmail.fr",
   password : "projetNodeTwo"
 });
 
 user.save();
+console.log(user);
 
 const book = new Book({
   id: "1",
@@ -53,7 +61,7 @@ book.save();
 
 
 
-mongoose.connect('mongodb+srv://Vincent:projetNode@projetnode.hmluiyg.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://Vincent:${passwordDb}@projetnode.hmluiyg.mongodb.net/?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
@@ -63,14 +71,6 @@ mongoose.connect('mongodb+srv://Vincent:projetNode@projetnode.hmluiyg.mongodb.ne
 app.use(express.json());
 
 
-
-
-
-
-
-
-
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -78,10 +78,10 @@ app.use((req, res, next) => {
     next();
   });
 
-app.get('/api/books', (req, res, next) => {
-    Book.find()
-    .then(books => res.status(200).json(books))
-    .catch(error => res.status(400).json({error}))
-  });
+
+
+app.use('/api/books', bookRoutes);
+app.use('/api/auth', userRoutes);
+
 
 module.exports = app;
