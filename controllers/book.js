@@ -5,7 +5,6 @@ const url = require('url');
 
 
 
-
 exports.getAllBooks = (req, res, next) => {
     Book.find()
     .then(books => res.status(200).json(books))
@@ -56,6 +55,7 @@ exports.updateRatingBook = (req, res, next) => {
 }
 
 
+
 exports.AddNewBook = (req, res, next) => {
     let tablAllId;
     let IdForNewBook;
@@ -86,6 +86,7 @@ exports.AddNewBook = (req, res, next) => {
 };
 
 
+
 exports.modifyOneBook = (req, res, next) => {
     Book.updateOne({_id : req.params.id}, {...req.body, _id: req.params.id})
     .then(() => {
@@ -107,49 +108,3 @@ exports.deleteBook = (req, res, next) => {
     .catch(error => res.status(500).json({error}))
 }
 
-/*
-exports.AddNewBook = (req, res, next) => {
-    let tablAllId;
-    let IdForNewBook;
-    const inputFilePath = req.file.path;
-    const fileExtension = path.extname(inputFilePath);
-
-    const outputImagePath = inputFilePath.replace(fileExtension, `_min${fileExtension}`);
-    console.log(outputImagePath);
-    sharp(inputFilePath)
-        .resize(320, 320)
-        .toFile(outputImagePath, (err, info) => {
-            if (err) {
-                console.error("une erreur s'est produite");
-            } else {
-                console.log("image redimensionné avec succès");
-            }
-        })
-
-    console.log(outputImagePath.fileName);
-    Book.find()
-    .then(books => {
-        tablAllId = [];
-        for(let i = 0; i < books.length ; i++){
-            tablAllId.push(parseInt(books[i].id));
-        }
-        tablAllId.sort((a, b) => a - b);
-        IdForNewBook = tablAllId[tablAllId.length - 1];
-        IdForNewBook += 1;
-        const bookObject = JSON.parse(req.body.book);
-        delete bookObject.__id;
-        delete bookObject.__userId;
-        const book = new Book({
-            ...bookObject,
-            id: IdForNewBook,
-            userId: req.auth.userId,
-            imageUrl: `${req.protocol}://${req.get('host')}/${outputImagePath}`
-        });
-        console.log(book.imageUrl);
-        book.save()
-        .then(() => res.status(201).json({ message: 'Livre bien enregistré'}))
-        .catch(error => res.status(403).json({ message: 'Livre pas enregistré' }));
-        })
-   .catch(error => res.status(403).json({ message: 'Livre pas enregistré'  }))
-    
-};*/
