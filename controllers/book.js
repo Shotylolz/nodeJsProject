@@ -31,8 +31,9 @@ exports.getBestRated = (req, res, next) => {
 }
 
 exports.updateRatingBook = (req, res, next) => {
-    const userId = req.auth.userID;
+    const userId = req.auth.userId;
     let numberTotalStars = 0;
+    let numberTotalStarsNewUser = 0;
     Book.findOne({_id: req.params.id})
     .then(book => {
         book.ratings.forEach(e => {
@@ -41,13 +42,24 @@ exports.updateRatingBook = (req, res, next) => {
             }
         });
         numberTotalStars += parseInt(req.body.rating);
+        numberTotalStarsNewUser += parseInt(req.body.rating);
+        /**
+         *Création d'un objet qui prendra l'id de l'user et la note
+         *La note venant du formulaire prenait le nom de "rating", ce qui occasionnait un bug dans la base de donné car enregistré sous le nom de "grade"
+         * Pour corriger ce problème, je crée un objet prenant userId pour "userId" et le req.body.rating pour "grade"
+        */
+        let notationObjectNewUser = {};
+        notationObjectNewUser.userId = userId;
+        notationObjectNewUser.grade = numberTotalStarsNewUser;
+        
         let bookAllRating = book.ratings;
         for(let i = 0; i < bookAllRating.length; i++) {
             numberTotalStars += bookAllRating[i].grade;
         }
+        
         const newAvegareRating = numberTotalStars / (book.ratings.length + 1);
         book.averageRating = newAvegareRating;
-        book.ratings.push(req.body);
+        book.ratings.push(tabl);
         book.save();
         return res.status(200).json(book);
     })
@@ -59,6 +71,7 @@ exports.updateRatingBook = (req, res, next) => {
 exports.AddNewBook = (req, res, next) => {
     let tablAllId;
     let IdForNewBook;
+    console.log(req.auth.userId + "fonction book");
     Book.find()
     .then(books => {
         tablAllId = [];
